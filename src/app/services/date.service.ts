@@ -9,4 +9,9 @@ export class DateService {
   constructor() { }
 
   date: BehaviorSubject<any> = new BehaviorSubject(moment());
+
+  changeMonth(dir: number) {
+    const value = this.date.value.add(dir, 'month');
+    this.date.next(value);
+  }
 }
