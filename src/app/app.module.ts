@@ -6,6 +6,7 @@ import { CalendarUserExecuteComponent } from './components/calendar-user-execute
 import { SelectorComponent } from './components/selector/selector.component';
 import { OrganaizerComponent } from './components/organaizer/organaizer.component';
 import {MomentPipe} from "./moment.pipe";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,9 @@ import {MomentPipe} from "./moment.pipe";
     MomentPipe
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
