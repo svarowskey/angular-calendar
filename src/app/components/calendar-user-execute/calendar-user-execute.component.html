@@ -1,29 +1,60 @@
+<header class="header">
+  <form [formGroup]="filterForm" class="form-inline">
+    <div class="container-fluid">
+      <div class="row d-flex">
+        <div class="col-xs-6 col-sm-4 text-center">
+          <select class="form-control" formControlName="user" multiple name="user options" id="selectUsers">
+            <option *ngFor="let user of users$ | async" [value]="user.id">
+              {{ user.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-xs-6 col-sm-4 align-self--center select-date">
+          <i class="material-icons" (click)="go(-1)">arrow_left</i>
+          <span>
+            {{ dateService.date | async | moment }}
+          </span>
+          <i class="material-icons" (click)="go(1)">arrow_right</i>
+        </div>
+
+        <div class="col-xs-6 col-sm-4 text-center">
+          <select class="form-control" formControlName="type" multiple name="type options" id="selectTypes">
+            <option
+              *ngFor="let type of types$ | async"
+              [value]="type.id"
+              [ngStyle]="{'background-color': type.color}">
+              {{ type.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+</header>
+
 <table>
   <thead>
     <tr>
-      <th>Пн</th>
-      <th>Вт</th>
-      <th>Ср</th>
-      <th>Чт</th>
-      <th>Пт</th>
-      <th>Сб</th>
-      <th>Вс</th>
+      <th>&nbsp;</th>
+      <th *ngFor="let day of calendar" [attr.day-data]="day.value | moment: 'DD-MM-YYYY'" class="text-center">
+        {{ day.value | moment:'DD' }}
+      </th>
     </tr>
   </thead>
 
   <tbody>
-    <tr *ngFor="let week of calendar">
+    <tr *ngFor="let user of usersWithRecords$ | async">
+      <th class="user-th">{{ user.name }}</th>
       <td
-        *ngFor="let day of week.days"
-        [class.disabled]="day.disabled"
-        (click)="select(day.value)"
+        *ngFor="let day of calendar"
+        [attr.day-data]="day.value | moment: 'DD-MM-YYYY'"
+        [ngClass]="{
+        'weekend': day.weekend,
+        'current': day.current
+        }"
       >
-        <span
-          [class.selected]="day.selected"
-          [class.active]="day.active"
-        >
-          {{ day.value | moment:'DD' }}
-        </span>
+
       </td>
     </tr>
   </tbody>

@@ -1,27 +1,29 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
 import { CalendarUserExecuteComponent } from './components/calendar-user-execute/calendar-user-execute.component';
-import { SelectorComponent } from './components/selector/selector.component';
-import { OrganaizerComponent } from './components/organaizer/organaizer.component';
 import {MomentPipe} from "./moment.pipe";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {CalendarService} from "./services/calendar.service";
+import {HttpClientModule} from "@angular/common/http";
+import {CalendarRepositoryService} from "./services/calendar.repository.service";
 
 @NgModule({
   declarations: [
     AppComponent,
     CalendarUserExecuteComponent,
-    SelectorComponent,
-    OrganaizerComponent,
     MomentPipe
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    CalendarService,
+    CalendarRepositoryService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
