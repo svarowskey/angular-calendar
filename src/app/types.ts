@@ -1,4 +1,4 @@
-import * as moment from "moment/moment";
+import { Day} from "./date";
 
 export interface Response<Type> {
   success: number;
@@ -24,12 +24,6 @@ export interface Type {
   color: string;
 }
 
-export interface Day {
-  value: moment.Moment;
-  weekend: boolean;
-  current: boolean;
-}
-
 export interface Record {
   id: number;
   user_id: number;
@@ -37,8 +31,8 @@ export interface Record {
   description: string;
   start: string;
   end: string;
-  start_date: string;
-  end_date: string;
+  start_date: Date;
+  end_date: Date;
 }
 
 export interface RecordResponse {
@@ -57,12 +51,18 @@ export interface RecordType {
 }
 
 export interface UserWithRecords extends User {
-  records: RecordWithType[]
+  records: RecordWithType[];
 }
 
-export type RecordWithType = {
-  type: RecordType
-} & Omit<Record, 'type_id' | 'user_id'>
+export interface RecordWithType extends Omit<Record, 'type_id'> {
+  type: RecordType;
+}
+
+export interface DayWithRecords extends Day {
+  records: { [userId: number]: RecordWithType[]};
+}
+
+export interface NewRecord extends Omit<RecordResponse, 'id'>{}
 
 export type UsersResponse = Response<UserResponse>
 export type Types = Response<Type>

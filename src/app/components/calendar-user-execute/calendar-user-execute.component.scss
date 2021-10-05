@@ -2,22 +2,57 @@ header {
   margin-top: 1rem;
 }
 
+.table-wrapper {
+  overflow: auto;
+  width: 100%;
+}
+
 table {
   width: 100%;
   margin-top: 1rem;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #000;
 
   td, th {
     border: 1px solid #000;
     padding: .5rem 1rem;
     user-select: none;
+    min-width: 50px;
+    position: relative;
+    background-color: #fff;
+
+    &.weekend {
+      background-color: #f7f7f7;
+    }
+
+    &.current {
+      background-color: #E7EEF1;
+    }
   }
 
   td {
     text-align: center;
+  }
 
-    &:hover {
-      cursor: pointer;
+  thead {
+    th {
+      z-index: 2;
+      position: sticky;
+      top: 0;
+
+      &:first-child {
+        left: 0;
+        z-index: 3;
+      }
+    }
+  }
+
+  tbody {
+    th {
+      z-index: 2;
+      position: sticky;
+      left: 0;
     }
   }
 
@@ -42,6 +77,14 @@ table {
   }
 }
 
-.weekend {
-  background: #f7f7f7;
+.record {
+  z-index: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  //border: 1px solid #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  white-space: nowrap;
 }

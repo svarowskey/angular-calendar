@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {
-  Day,
+  DayWithRecords,
   Record,
   RecordResponse,
   RecordType,
@@ -14,13 +13,16 @@ import {
 } from "../types";
 import {map} from "rxjs/operators";
 import {CalendarRepositoryService} from "./calendar.repository.service";
+import {Day} from "../date";
+import {DatePipe} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalendarService {
   constructor(
-    private calendarRepository: CalendarRepositoryService
+    private calendarRepository: CalendarRepositoryService,
+    private datePipe: DatePipe
   ) { }
 
   getUsers(): Observable<User[]>{
@@ -46,8 +48,8 @@ export class CalendarService {
     }));
   }
 
-  getRecords(date: any, userIds: number[] = [], typeIds: number[] = []): Observable<Record[]> {
-    const formatDate: string = date.format('YYYY-MM');
+  getRecords(date: Date = new Date(), userIds: number[] = [], typeIds: number[] = []): Observable<Record[]> {
+    const formatDate: string = this.datePipe.transform(date, 'YYYY-MM') as string;
     return this.calendarRepository.fetchRecords(formatDate, userIds, typeIds).pipe(
       map(({data}) => this.mapRecords(data))
     );
@@ -56,8 +58,8 @@ export class CalendarService {
   mapRecords(recordsResponse: RecordResponse[]): Record[] {
     return recordsResponse.map((record) => ({
       ...record,
-      start_date: record.start,
-      end_date: record.end
+      start_date: new Date(record.start),
+      end_date: new Date(record.end)
     }))
   }
 
@@ -69,6 +71,7 @@ export class CalendarService {
       end: record.end,
       start_date: record.start_date,
       end_date: record.end_date,
+      user_id: record.user_id,
       type: recordTypesDict[record.type_id],
     }
   }
@@ -94,5 +97,42 @@ export class CalendarService {
         records: recordsByUserId[user.id]
           .map((record) => this.mapRecordWithType(record, recordTypesDict))
       }))
+  }
+
+  mapRecordTypesAsDict(recordTypes: RecordType[]): {[key: number]: RecordType} {
+    return recordTypes.reduce((dict: {[key: number]: RecordType}, type) => {
+      dict[type.id] = type;
+      return dict;
+    }, [])
+  }
+
+  mapDaysWithRecords(days: Day[], records: RecordWithType[]): DayWithRecords[] {
+    return days.map((day) => {
+      const dayWithRecords: DayWithRecords = {...day, records: {}};
+      records.forEach((record) => {
+        const recordStartDate = new Date(record.start_date);
+        recordStartDate.setHours(0,0,0,0);
+        if (day.date.getTime() === recordStartDate.getTime()) {
+          if (!dayWithRecords.records[record.user_id]) {
+            dayWithRecords.records[record.user_id] = []
+          }
+          dayWithRecords.records[record.user_id].push(record);
+        }
+      })
+      return dayWithRecords;
+    })
+  }
+
+  addRecords() {
+    const records = [
+      {
+        "user_id": 667,
+        "type_id": 4,
+        "description" : "Болезнь",
+        "start": "2021-10-06 00:00",
+        "end": "2021-10-30 18:00"
+      }
+    ];
+    return this.calendarRepository.addRecords(records);
   }
 }

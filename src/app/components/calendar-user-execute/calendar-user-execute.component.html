@@ -11,11 +11,11 @@
         </div>
 
         <div class="col-xs-6 col-sm-4 align-self--center select-date">
-          <i class="material-icons" (click)="go(-1)">arrow_left</i>
+          <i class="material-icons" (click)="changeMonth(true)">arrow_left</i>
           <span>
-            {{ dateService.date | async | moment }}
+            {{ monthName$ | async}}, {{ year$ | async }}
           </span>
-          <i class="material-icons" (click)="go(1)">arrow_right</i>
+          <i class="material-icons" (click)="changeMonth()">arrow_right</i>
         </div>
 
         <div class="col-xs-6 col-sm-4 text-center">
@@ -33,29 +33,38 @@
   </form>
 </header>
 
-<table>
-  <thead>
+<div class="table-wrapper">
+  <table>
+    <thead>
     <tr>
       <th>&nbsp;</th>
-      <th *ngFor="let day of calendar" [attr.day-data]="day.value | moment: 'DD-MM-YYYY'" class="text-center">
-        {{ day.value | moment:'DD' }}
+      <th *ngFor="let day of days$ | async"  class="text-center">
+        {{ day.number  }}
       </th>
     </tr>
-  </thead>
+    </thead>
 
-  <tbody>
-    <tr *ngFor="let user of usersWithRecords$ | async">
-      <th class="user-th">{{ user.name }}</th>
-      <td
-        *ngFor="let day of calendar"
-        [attr.day-data]="day.value | moment: 'DD-MM-YYYY'"
-        [ngClass]="{
-        'weekend': day.weekend,
-        'current': day.current
-        }"
-      >
-
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <tbody>
+      <tr *ngFor="let user of usersWithRecords$ | async">
+        <th class="user-th">{{ user.name }}</th>
+        <td
+          *ngFor="let day of daysWithRecords$ | async"
+          [ngClass]="{
+          'weekend': day.isWeekend,
+          'current': day.current
+          }"
+        >
+          <ng-container *ngIf="day.records[user.id] as records">
+            <div *ngFor="let record of records"
+                 [title]="record.description"
+                 [ngStyle]="getRecordStyle(record)"
+                 class="record"
+            >
+              {{ record.description }} ({{ record.start | date: 'dd.MM.YYYY' }} - {{ record.end | date: 'dd.MM.YYYY' }})
+            </div>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

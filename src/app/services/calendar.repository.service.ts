@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {RecordsResponse, Types, UsersResponse} from "../types";
+import {NewRecord, RecordsResponse, Types, UsersResponse} from "../types";
 
 @Injectable()
 export class CalendarRepositoryService {
@@ -27,5 +27,9 @@ export class CalendarRepositoryService {
         'type_id[]': typeIds
       }})
     return this.http.get<RecordsResponse>(this.url, {params})
+  }
+
+  addRecords(records: NewRecord[]) {
+    return this.http.post(this.url, records);
   }
 }
